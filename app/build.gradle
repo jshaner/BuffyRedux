@@ -1,5 +1,12 @@
 apply plugin: 'com.android.application'
 
+static def getProperty(String propertyFile, String propertyName) {
+    Properties properties = new Properties();
+    properties.load(new FileInputStream(propertyFile));
+    return String.format("\"%s\"", properties.getProperty(propertyName));
+}
+
+
 android {
     compileSdkVersion 29
     buildToolsVersion "29.0.3"
@@ -12,6 +19,14 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "BASE_URL",
+                getProperty("$projectDir/../../../services/buffyredux.properties", "base_url")
+        buildConfigField "String", "API_KEY",
+                getProperty("$projectDir/../../../services/buffyredux.properties", "api_key")
+        buildConfigField "String", "WEBSITE_URL",
+                getProperty("$projectDir/../../../services/buffyredux.properties", "website_url")
+
     }
 
     buildTypes {
@@ -19,6 +34,13 @@ android {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
         }
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    buildTypes.each {
+        it.buildConfigField "String", "THE_MOVIE_DB_API_TOKEN", MyTheMovieDBApiToken
     }
 
 }
@@ -34,6 +56,10 @@ dependencies {
     // Preference/settings dependencies
     implementation 'androidx.preference:preference:1.1.1'
 
+    implementation 'com.github.bumptech.glide:glide:4.11.0'
+    // Glide v4 uses this new annotation processor -- see https://bumptech.github.io/glide/doc/generatedapi.html
+    annotationProcessor 'com.github.bumptech.glide:compiler:4.11.0'
+
     // LiveData & ViewModel dependencies
     implementation 'androidx.lifecycle:lifecycle-extensions:2.2.0'
 
@@ -43,6 +69,13 @@ dependencies {
     // ReactiveX dependencies
     implementation 'io.reactivex.rxjava2:rxjava:2.2.19'
     implementation 'io.reactivex.rxjava2:rxandroid:2.1.1'
+
+    // Retrofit (HTTP client) dependencies
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.14.2'
+    def retrofit_version = "2.6.2"
+    implementation "com.squareup.retrofit2:retrofit:$retrofit_version"
+    implementation "com.squareup.retrofit2:converter-gson:$retrofit_version"
+    implementation "com.squareup.retrofit2:adapter-rxjava2:$retrofit_version"
 
     // Room and SQLite dependencies
     def room_version = "2.2.5"
@@ -65,7 +98,7 @@ dependencies {
     testImplementation 'junit:junit:4.13'
     androidTestImplementation 'androidx.test:runner:1.2.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
+    implementation 'androidx.swiperefreshlayout:swiperefreshlayout:1.1.0'
+
 
 }
-
-
