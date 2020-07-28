@@ -1,6 +1,7 @@
 package edu.cnm.deepdive.buffyredux;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.ContextWrapper;
@@ -32,7 +33,7 @@ public class MainActivity extends AppCompatActivity {
   private RecyclerView recyclerView;
   private MoviesAdapter adapter;
   private List<Movie> movieList;
-  ProgressDialog pd;
+  AlertDialog pd;
   private SwipeRefreshLayout swipeContainer;
   public static final String LOG_TAG = MoviesAdapter.class.getName();
 
@@ -43,14 +44,11 @@ public class MainActivity extends AppCompatActivity {
 
     initViews();
 
-    swipeContainer = (SwipeRefreshLayout) findViewById(R.id.main_content);
+    swipeContainer = findViewById(R.id.main_content);
     swipeContainer.setColorSchemeResources(android.R.color.holo_orange_dark);
-    swipeContainer.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
-      @Override
-      public void onRefresh() {
-        initViews();
-        Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
-      }
+    swipeContainer.setOnRefreshListener(() -> {
+      initViews();
+      Toast.makeText(MainActivity.this, "Movies Refreshed", Toast.LENGTH_SHORT).show();
     });
   }
 
